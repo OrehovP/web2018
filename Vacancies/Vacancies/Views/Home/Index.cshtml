@@ -1,0 +1,35 @@
+﻿@model Vacancies.Models.VacanciesViewModel
+@{
+    ViewData["Title"] = "Профессии и ключевые навыки";
+}
+
+<div class="row">
+    <div class="col-md-3">
+        <h4>@String.Format("Профессии с зарплатой >= {0} рублей", Model.BigSalary)</h4>
+        @foreach (string vacancy in Model.ProfessionsBigSalary)
+        {
+            <p>@vacancy</p>
+        }
+    </div>
+    <div class="col-md-3">
+        <h4>@String.Format("Ключевые навыки из вакансий с зарплатой >= {0} рублей", Model.BigSalary)</h4>
+        @foreach (string keySkill in Model.SkillsBigSalary)
+        {
+            <p>@keySkill</p>
+        }
+    </div>
+    <div class="col-md-3">
+        <h4>@String.Format("Профессии с зарплатой < {0} рублей", Model.LowSalary)</h4>
+        @foreach (string vacancy in Model.ProfessionsLowSalary)
+        {
+            <p>@vacancy</p>
+        }
+    </div>
+    <div class="col-md-3">
+        <h4>@String.Format("Ключевые навыки из вакансий с зарплатой < {0} рублей", Model.LowSalary)</h4>
+        @foreach (string keySkill in Model.SkillsLowSalary)
+        {
+            <p>@keySkill</p>
+        }
+    </div>
+</div>

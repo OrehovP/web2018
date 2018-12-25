@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Vacancies
+namespace Movies
 {
     public class Startup
     {
@@ -56,7 +56,7 @@ namespace Vacancies
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Home}/{action=Predict}/{id?}");
             });
         }
     }

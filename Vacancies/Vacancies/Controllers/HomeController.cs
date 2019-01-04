@@ -53,10 +53,10 @@ namespace Vacancies.Controllers
         public VacanciesViewModel GetVacancies(int bigSalary, int lowSalary)
         {
             VacanciesViewModel model = new VacanciesViewModel(bigSalary, lowSalary);
-            IRestResponse response = RequestVacancies(firstPage);
+            IRestResponse response = GetVacancies(firstPage);
             int pagesCount = (int)JObject.Parse(response.Content)["pages"];
             JArray vacancies = JObject.Parse(response.Content)["items"] as JArray;
-            for (int i = firstPage; i < 50; i++)
+            for (int i = firstPage; i < pagesCount; i++)
             {
                 foreach (var vacancy in vacancies)
                 {
@@ -67,7 +67,7 @@ namespace Vacancies.Controllers
                     var salaryCurr = vacancy["salary"]["currency"];
                     var salaryFromType = salaryFrom.Type;
                     var salaryToType = salaryTo.Type;
-                    double salary = -1D;
+                    double salary = -1;
                     if ((string)salaryCurr != "RUR")
                         continue;
                     else if (salaryFromType != JTokenType.Null && salaryToType != JTokenType.Null)
@@ -78,45 +78,59 @@ namespace Vacancies.Controllers
                         salary = (double)salaryFrom;
                     if (salary >= bigSalary)
                     {
-                        model.ProfessionsWithBigSalary.Add((string)vacancy["name"]);
-                        var details = JObject.Parse(RequestVacancyDetails((string)vacancy["id"]).Content);
+                        var profession = (string)vacancy["name"];
+                        if (!model.ProfessionsBigSalary.Contains(profession))
+                        {
+                            model.ProfessionsBigSalary.Add(profession);
+                        }
+                        var details = JObject.Parse(GetVacancyDetails((string)vacancy["id"]).Content);
                         JArray keySkills = details["key_skills"] as JArray;
                         if (keySkills.HasValues)
                         {
                             foreach (var keySkill in keySkills)
                             {
-                                model.SkillsForBigSalary.Add((string)keySkill["name"]);
+                                var skill = (string)keySkill["name"];
+                                if (model.SkillsBigSalary.Contains(skill))
+                                    continue;
+                                model.SkillsBigSalary.Add(skill);
                             }
                         }
                     }
                     else if (salary > 0 && salary < lowSalary)
                     {
-                        model.ProfessionsWithLowSalary.Add((string)vacancy["name"]);
-                        var details = JObject.Parse(RequestVacancyDetails((string)vacancy["id"]).Content);
+                        var profession = (string)vacancy["name"];
+                        if (!model.ProfessionsLowSalary.Contains(profession))
+                        {
+                            model.ProfessionsLowSalary.Add(profession);
+                        }
+                        var details = JObject.Parse(GetVacancyDetails((string)vacancy["id"]).Content);
                         JArray keySkills = details["key_skills"] as JArray;
                         if (keySkills.HasValues)
                         {
-                            foreach (JToken keySkill in keySkills)
+                            foreach (var keySkill in keySkills)
                             {
-                                model.SkillsForLowSalary.Add((string)keySkill["name"]);
+                                var skill = (string)keySkill["name"];
+                                if (model.SkillsLowSalary.Contains(skill))
+                                    continue;
+                                model.SkillsLowSalary.Add(skill);
                             }
                         }
                     }
                 }
-                response = RequestVacancies(firstPage + i + 1);
+                response = GetVacancies(firstPage + i + 1);
                 vacancies = JObject.Parse(response.Content)["items"] as JArray;
             }
             return model;
         }
 
-        private IRestResponse RequestVacancies(int page)
+        private IRestResponse GetVacancies(int page)
         {
             IRestRequest request = new RestRequest(string.Format("{0}?page={1}&per_page={2}", resource, page, vacanciesPerPage), Method.GET);
             request.AddParameter("only_with_salary", "true");
             return client.Execute(request);
         }
 
-        private IRestResponse RequestVacancyDetails(string id)
+        private IRestResponse GetVacancyDetails(string id)
         {
             IRestRequest request = new RestRequest(string.Format("{0}/{1}", resource, id), Method.GET);
             return client.Execute(request);

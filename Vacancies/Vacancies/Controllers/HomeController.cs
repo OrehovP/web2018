@@ -21,28 +21,7 @@ namespace Vacancies.Controllers
             VacanciesViewModel model = GetVacancies(120000, 15000);
             return View(model);
         }
-
-        //public async Task SendRequest()
-        //{
-        //    using (
-        //        HttpClient client = new HttpClient())
-        //    {
-        //        var request = new HttpRequestMessage()
-        //        {
-        //            RequestUri = new Uri("https://api.hh.ru/vacancies"),
-        //            Method = HttpMethod.Get,
-        //        };
-        //        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        //        var response = await client.SendAsync(request);
-        //        if (response.StatusCode == HttpStatusCode.OK)
-        //        {
-        //            HttpContent responseContent = response.Content;
-        //            var json = await responseContent.ReadAsStringAsync();
-        //            //var vacancies = JsonConvert.DeserializeObject(json);
-        //        }
-        //    }
-        //}
-
+		
         private const string host = "https://api.hh.ru";
         private const string resource = "/vacancies";
         private const int vacanciesPerPage = 100;
